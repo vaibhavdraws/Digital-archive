@@ -138,7 +138,7 @@ app.get("/artworks", (req, res) => {
         title: artwork.title,
 
         image:
-          `http://localhost:5000/uploads/${artwork.filename}`
+    `https://captain-lawc-api.onrender.com/uploads/${artwork.filename}`
 
       })
 
