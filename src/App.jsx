@@ -24,7 +24,7 @@ export default function App() {
 
       const response =
         await fetch(
-          "http://localhost:5000/artworks"
+          "https://captain-lawc-api.onrender.com/artworks"
         )
 
       const data =

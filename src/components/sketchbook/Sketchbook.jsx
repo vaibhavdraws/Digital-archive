@@ -57,7 +57,7 @@ export default function Sketchbook({
 
     await fetch(
 
-      "http://localhost:5000/artworks",
+      "https://captain-lawc-api.onrender.com/artworks",
 
       {
         method: "DELETE",
