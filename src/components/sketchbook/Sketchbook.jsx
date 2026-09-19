@@ -1,170 +1,31 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 import ArtworkPage from "./ArtworkPage"
-
-import NavigationButtons
-  from "./NavigationButtons"
-
-import ArtworkModal
-  from "../modal/ArtworkModal"
-
-import UploadPanel
-  from "../upload/UploadPanel"
+import NavigationButtons from "./NavigationButtons"
+import ArtworkModal from "../modal/ArtworkModal"
+import UploadPanel from "../upload/UploadPanel"
 
 export default function Sketchbook({
 
-  isAdmin
+  isAdmin,
+  artworks,
+  refreshArtworks
 
 }) {
 
   const [page, setPage]
     = useState(0)
 
-  const [mobile, setMobile]
-    = useState(window.innerWidth < 900)
-
   const [selectedArtwork,
     setSelectedArtwork]
     = useState(null)
 
-  const [artworks, setArtworks]
-    = useState([])
-
-  /* =========================
-     LOAD ARTWORKS
-  ========================= */
-
-  const fetchArtworks =
-    async () => {
-
-      try {
-
-        const response =
-          await fetch(
-            "http://localhost:5000/artworks"
-          )
-
-        const data =
-          await response.json()
-
-        console.log("ARTWORKS:", data)
-
-        setArtworks(data)
-
-      } catch (error) {
-
-        console.log(error)
-
-      }
-
-    }
-
-  const deleteArtwork = async (
-    artwork
-  ) => {
-
-    if (
-
-      !window.confirm(
-
-        `Delete "${artwork.title}" ?`
-
-      )
-
-    ) {
-
-      return
-
-    }
-
-    try {
-
-      const filename =
-        artwork.image.split("/")
-          .pop()
-
-      await fetch(
-
-        "http://localhost:5000/artworks",
-
-        {
-
-          method: "DELETE",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            filename
-
-          })
-
-        }
-
-      )
-
-      fetchArtworks()
-
-    } catch (error) {
-
-      console.log(error)
-
-    }
-
-  }
-  /* =========================
-     INITIAL LOAD
-  ========================= */
-
-  useEffect(() => {
-
-    fetchArtworks()
-
-  }, [])
-
-  /* =========================
-     MOBILE CHECK
-  ========================= */
-
-  useEffect(() => {
-
-    const handleResize = () => {
-
-      setMobile(
-        window.innerWidth < 900
-      )
-
-    }
-
-    window.addEventListener(
-      "resize",
-      handleResize
-    )
-
-    return () =>
-
-      window.removeEventListener(
-        "resize",
-        handleResize
-      )
-
-  }, [])
-
-  const step =
-    mobile ? 1 : 2
-
-  /* =========================
-     NEXT PAGE
-  ========================= */
+  const step = 2
 
   const nextPage = () => {
 
     if (
-      page <
-      artworks.length - step
+      page < artworks.length - step
     ) {
 
       setPage(
@@ -174,10 +35,6 @@ export default function Sketchbook({
     }
 
   }
-
-  /* =========================
-     PREVIOUS PAGE
-  ========================= */
 
   const prevPage = () => {
 
@@ -191,29 +48,39 @@ export default function Sketchbook({
 
   }
 
-  /* =========================
-     MODAL
-  ========================= */
+  const deleteArtwork = async (
+    artwork
+  ) => {
 
-  const openModal = (artwork) => {
+    const filename =
+      artwork.image.split("/").pop()
 
-    setSelectedArtwork(
-      artwork
+    await fetch(
+
+      "http://localhost:5000/artworks",
+
+      {
+        method: "DELETE",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+          filename
+        })
+      }
+
     )
 
-  }
-
-  const closeModal = () => {
-
-    setSelectedArtwork(null)
+    refreshArtworks()
 
   }
 
   return (
 
     <section className="sketchbookWrapper">
-
-
 
       <NavigationButtons
         nextPage={nextPage}
@@ -224,40 +91,41 @@ export default function Sketchbook({
 
         <ArtworkPage
           artwork={artworks[page]}
-          openModal={openModal}
+          openModal={setSelectedArtwork}
           isAdmin={isAdmin}
           deleteArtwork={deleteArtwork}
         />
 
-        {!mobile && (
-
-          <ArtworkPage
-            artwork={artworks[page + 1]}
-            openModal={openModal}
-            isAdmin={isAdmin}
-            deleteArtwork={deleteArtwork}
-          />
-
-        )}
+        <ArtworkPage
+          artwork={artworks[page + 1]}
+          openModal={setSelectedArtwork}
+          isAdmin={isAdmin}
+          deleteArtwork={deleteArtwork}
+        />
 
       </div>
 
       <ArtworkModal
         artwork={selectedArtwork}
-        closeModal={closeModal}
+        closeModal={() =>
+          setSelectedArtwork(null)
+        }
       />
 
-      {isAdmin && (
+      {
 
-        <UploadPanel
-          refreshArtworks={fetchArtworks}
-        />
+        isAdmin && (
 
-      )}
+          <UploadPanel
+            refreshArtworks={refreshArtworks}
+          />
+
+        )
+
+      }
 
     </section>
 
   )
 
 }
-

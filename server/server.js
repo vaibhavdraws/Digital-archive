@@ -1,15 +1,14 @@
 const express = require("express")
-
 const cors = require("cors")
-
 const multer = require("multer")
-
 const path = require("path")
-
 const fs = require("fs")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 const artworksFile =
-path.join(__dirname,"artworks.json")
+  path.join(__dirname, "artworks.json")
 
 const app = express()
 
@@ -17,6 +16,43 @@ app.use(cors())
 
 app.use(express.json())
 
+/*;(async () => {
+  const result = await bcrypt.compare(
+    "gillu123",
+    process.env.ADMIN_PASSWORD_HASH
+  )
+
+  console.log("Password check:", result)
+})() */
+
+app.post("/admin-login", async (req, res) => {
+
+  const { password } = req.body
+
+  const isMatch =
+    await bcrypt.compare(
+      password,
+      process.env.ADMIN_PASSWORD_HASH
+    )
+
+  if (isMatch) {
+    const token = jwt.sign(
+      { admin: true },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    )
+
+    return res.json({
+      success: true,
+      token
+    })
+  }
+
+  res.status(401).json({
+    success: false
+  })
+
+})
 /* =========================
    CREATE UPLOAD FOLDER
 ========================= */
@@ -68,7 +104,7 @@ const upload =
     limits: {
 
       fileSize:
-      10 * 1024 * 1024
+        10 * 1024 * 1024
 
     }
 
@@ -78,7 +114,7 @@ const upload =
    GET ARTWORKS
 ========================= */
 
-app.get("/artworks",(req,res)=>{
+app.get("/artworks", (req, res) => {
 
   const artworks =
 
@@ -97,12 +133,12 @@ app.get("/artworks",(req,res)=>{
 
       artwork => ({
 
-        id:artwork.id,
+        id: artwork.id,
 
-        title:artwork.title,
+        title: artwork.title,
 
         image:
-        `http://localhost:5000/uploads/${artwork.filename}`
+          `http://localhost:5000/uploads/${artwork.filename}`
 
       })
 
@@ -122,13 +158,13 @@ app.post(
 
   upload.single("image"),
 
-  (req,res) => {
+  (req, res) => {
 
-    if(!req.file){
+    if (!req.file) {
 
       return res.status(400).json({
 
-        error:"No image uploaded"
+        error: "No image uploaded"
 
       })
 
@@ -147,11 +183,11 @@ app.post(
 
     const newArtwork = {
 
-      id:Date.now(),
+      id: Date.now(),
 
-      title:req.body.title,
+      title: req.body.title,
 
-      filename:req.file.filename
+      filename: req.file.filename
 
     }
 
@@ -183,16 +219,16 @@ app.delete(
 
   "/artworks",
 
-  (req,res) => {
+  (req, res) => {
 
     const { filename } =
       req.body
 
-    if(!filename){
+    if (!filename) {
 
       return res.status(400).json({
 
-        error:"Filename required"
+        error: "Filename required"
 
       })
 
@@ -204,7 +240,7 @@ app.delete(
         filename
       )
 
-    if(fs.existsSync(filePath)){
+    if (fs.existsSync(filePath)) {
 
       fs.unlinkSync(filePath)
 
@@ -244,7 +280,7 @@ app.delete(
 
     res.json({
 
-      success:true
+      success: true
 
     })
 
@@ -265,13 +301,35 @@ app.use(
 )
 
 /* =========================
+   ADMIN LOGIN
+========================= */
+
+app.post("/admin-login", (req, res) => {
+
+  const { password } = req.body
+
+  if (
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    return res.json({
+      success: true
+    })
+  }
+
+  res.status(401).json({
+    success: false
+  })
+
+})
+
+/* =========================
    START SERVER
 ========================= */
 
-app.listen(5000, () => {
+app.listen(process.env.PORT, () => {
 
   console.log(
-    "Server running on port 5000"
+    `Server running on port ${process.env.PORT}`
   )
 
 })

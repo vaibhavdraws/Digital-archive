@@ -1,28 +1,67 @@
+import { useState } from "react"
+
 export default function Header({
 
   isAdmin,
-
-  setIsAdmin
+  setIsAdmin,
+  setViewMode
 
 }) {
 
-  const handleAdminLogin = () => {
+  const [menuOpen, setMenuOpen]
+    = useState(false)
+
+  const handleAdminLogin = async () => {
 
     const password =
       prompt("Enter admin password")
 
-    if (password === "gillu123") {
+    if (!password) return
 
-      setIsAdmin(true)
+    try {
 
-    } else {
+      const response =
+        await fetch(
+          "http://localhost:5000/admin-login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+            body: JSON.stringify({
+              password
+            })
+          }
+        )
 
-      alert("Access denied")
+      const data =
+        await response.json()
+
+      if (data.success) {
+
+        localStorage.setItem(
+          "adminToken",
+          data.token
+        )
+
+        setIsAdmin(true)
+
+      } else {
+
+        alert("Access denied")
+
+      }
+
+    } catch (error) {
+
+      console.log(error)
+
+      alert("Server error")
 
     }
 
   }
-
   return (
 
     <header className="header">
@@ -38,7 +77,7 @@ export default function Header({
         <div>
 
           <h1 className="brand">
-            The Grey Diary
+            Captain L.A.W.C
           </h1>
 
           <p className="subtitle">
@@ -46,7 +85,7 @@ export default function Header({
           </p>
 
           <a
-            href="https://www.youtube.com/@Greydiaryofgreyman"
+            href="https://www.youtube.com/@captainL.A.W.C"
             target="_blank"
             rel="noopener noreferrer"
             className="youtubeLink"
@@ -58,7 +97,7 @@ export default function Header({
               className="youtubeIcon"
             />
 
-            @Greydiaryofgreyman
+            @captainL.A.W.C
 
           </a>
 
@@ -69,12 +108,55 @@ export default function Header({
       <div className="headerCenter">
 
         <h2>
-          Welcome to The Grey Diary
+          Welcome to The Digital Sketchbook
         </h2>
 
       </div>
 
       <div className="headerRight">
+
+        <div className="hamburgerWrapper">
+
+          <button
+            className="hamburgerButton"
+            onClick={() =>
+              setMenuOpen(!menuOpen)
+            }
+          >
+            ☰
+          </button>
+
+          {
+
+            menuOpen && (
+
+              <div className="dropdownMenu">
+
+                <button
+                  onClick={() => {
+                    setViewMode("sketchbook")
+                    setMenuOpen(false)
+                  }}
+                >
+                  Sketchbook
+                </button>
+
+                <button
+                  onClick={() => {
+                    setViewMode("gallery")
+                    setMenuOpen(false)
+                  }}
+                >
+                  Gallery
+                </button>
+
+              </div>
+
+            )
+
+          }
+
+        </div>
 
         <button
           className="adminButton"

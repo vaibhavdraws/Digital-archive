@@ -1,246 +1,399 @@
 @import "./variables.css";
 @import "./animations.css";
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
+body {
 
   background:
-  radial-gradient(
-  circle at top,
-  #1b1b1b,
-  #050505);
+    radial-gradient(circle at 20% 20%,
+      rgba(255, 0, 180, 0.10),
+      transparent 25%),
 
-  color:var(--text-primary);
+    radial-gradient(circle at 80% 30%,
+      rgba(0, 255, 255, 0.08),
+      transparent 30%),
 
-  font-family:Arial,sans-serif;
+    radial-gradient(circle at 50% 80%,
+      rgba(0, 140, 255, 0.08),
+      transparent 35%),
 
-  min-height:100vh;
+    radial-gradient(circle at 70% 70%,
+      rgba(255, 255, 0, 0.06),
+      transparent 25%),
 
-  overflow-x:hidden;
+    radial-gradient(circle at 30% 60%,
+      rgba(180, 0, 255, 0.08),
+      transparent 30%),
+
+    linear-gradient(135deg,
+      #050505,
+      #0b0b0b,
+      #030303);
+
+  background-attachment: fixed;
+  background-size: cover;
+
+  color: var(--text-primary);
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.app{
+body::before {
+  content: "";
 
-  width:100%;
-  min-height:100vh;
+  position: fixed;
+  inset: 0;
 
-  padding:24px;
+  background:
+    linear-gradient(120deg,
+      transparent,
+      rgba(255, 255, 255, 0.02),
+      transparent);
+
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
 
-.header{
+.app {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+}
 
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+/* =========================
+   HEADER
+========================= */
 
-  margin-bottom:50px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  padding-bottom:20px;
+  margin-bottom: 50px;
+  padding-bottom: 20px;
 
   border-bottom:
-  1px solid var(--border-color);
+    1px solid var(--border-color);
 }
 
-.logoSection{
-
-  display:flex;
-  align-items:center;
-
-  gap:16px;
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.logo{
+.logo {
+  width: 80px;
+  height: 80px;
 
-  width:80px;
-  height:80px;
+  object-fit: cover;
 
-  object-fit:cover;
-
-  border-radius:16px;
+  border-radius: 16px;
 
   border:
-  1px solid rgba(255,255,255,0.1);
+    1px solid rgba(255, 255, 255, 0.1);
 
   box-shadow:
-  0 0 20px rgba(255,255,255,0.08);
+    0 0 20px rgba(255, 255, 255, 0.08);
 }
 
-.brand{
-  font-size:1.5rem;
+.brand {
+  font-size: 1.5rem;
 }
 
-.subtitle{
-
-  margin-top:4px;
-
-  color:var(--text-secondary);
+.subtitle {
+  margin-top: 4px;
+  color: var(--text-secondary);
 }
 
-.profileImage{
+.headerCenter {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  width:60px;
-  height:60px;
+.headerCenter h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: .5px;
+}
 
-  border-radius:50%;
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-  object-fit:cover;
+/* =========================
+   PROFILE
+========================= */
+
+.profileImage {
+  width: 60px;
+  height: 60px;
+
+  border-radius: 50%;
+  object-fit: cover;
 
   border:
-  2px solid rgba(255,255,255,0.1);
+    2px solid rgba(255, 255, 255, 0.1);
 }
 
-.headerRight{
+/* =========================
+   ADMIN BUTTON
+========================= */
 
-  display:flex;
+.adminButton {
+  background: white;
+  color: black;
 
-  align-items:center;
+  border: none;
 
-  gap:16px;
+  border-radius: 999px;
+
+  padding: 10px 20px;
+
+  font-weight: 600;
+  font-size: 0.9rem;
+
+  cursor: pointer;
+
+  transition: .25s ease;
 }
 
-.adminButton{
-
-  background:white;
-
-  color:black;
-
-  border:none;
-
-  border-radius:999px;
-
-  padding:10px 20px;
-
-  font-weight:600;
-
-  font-size:0.9rem;
-
-  cursor:pointer;
-
-  transition:0.25s ease;
-}
-
-.adminButton:hover{
-
-  transform:translateY(-2px);
+.adminButton:hover {
+  transform: translateY(-2px);
 
   box-shadow:
-  0 8px 20px rgba(255,255,255,0.15);
+    0 8px 20px rgba(255, 255, 255, 0.15);
 }
 
-@media(max-width:600px){
+/* =========================
+   YOUTUBE
+========================= */
 
-  .header{
+.youtubeLink {
+  margin-top: 10px;
 
-    flex-direction:column;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 
-    gap:18px;
-  }
+  padding: 8px 14px;
 
-  .headerRight{
-
-    width:100%;
-
-    justify-content:center;
-  }
-
-  .brand{
-
-    font-size:1.2rem;
-  }
-
-}
-
-.youtubeLink{
-
-  margin-top:10px;
-
-  display:inline-flex;
-
-  align-items:center;
-
-  gap:8px;
-
-  padding:8px 14px;
-
-  border-radius:999px;
+  border-radius: 999px;
 
   background:
-  rgba(255,255,255,0.05);
+    rgba(255, 255, 255, 0.05);
 
   border:
-  1px solid rgba(255,255,255,0.08);
+    1px solid rgba(255, 255, 255, 0.08);
 
-  color:white;
+  color: white;
 
-  text-decoration:none;
+  text-decoration: none;
 
-  font-size:0.85rem;
+  font-size: 0.85rem;
 
-  transition:all .25s ease;
+  transition: all .25s ease;
 }
 
-.youtubeLink:hover{
-
-  transform:
-  translateY(-2px);
+.youtubeLink:hover {
+  transform: translateY(-2px);
 
   background:
-  rgba(255,255,255,0.1);
+    rgba(255, 255, 255, 0.1);
+}
+
+.youtubeIcon {
+  width: 18px;
+  height: 18px;
+
+  object-fit: contain;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.heroDescription {
+  max-width: 900px;
+
+  margin: 0 auto 50px auto;
+
+  text-align: center;
+
+  animation:
+    slideUpFade .8s ease;
+}
+
+.heroDescription p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* =========================
+   HAMBURGER
+========================= */
+
+.hamburgerWrapper {
+  position: relative;
+}
+
+.hamburgerButton {
+  width: 46px;
+  height: 46px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  font-size: 1.5rem;
+
+  cursor: pointer;
+
+  transition: .25s ease;
+}
+
+.hamburgerButton:hover {
+  background:
+    rgba(255, 255, 255, 0.15);
+}
+
+.dropdownMenu {
+  position: absolute;
+
+  top: 55px;
+  right: 0;
+
+  width: 180px;
+
+  background: #111;
 
   border:
-  1px solid rgba(255,255,255,0.15);
+    1px solid rgba(255, 255, 255, .08);
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  z-index: 100;
 }
 
-.youtubeIcon{
+.dropdownMenu button {
+  width: 100%;
 
-  width:18px;
+  padding: 14px;
 
-  height:18px;
+  border: none;
 
-  object-fit:contain;
+  background: none;
+
+  color: white;
+
+  text-align: left;
+
+  cursor: pointer;
 }
 
-.heroDescription{
-
-  max-width:900px;
-
-  margin:0 auto 50px auto;
-
-  text-align:center;
+.dropdownMenu button:hover {
+  background:
+    rgba(255, 255, 255, .06);
 }
 
-.heroDescription p{
+/* =========================
+   MOBILE
+========================= */
 
-  color:var(--text-secondary);
+@media(max-width:600px) {
 
-  line-height:1.8;
+  .app {
+    padding: 14px;
+  }
 
-  font-size:1rem;
-}
+  .header {
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
 
-.headerCenter{
+    margin-bottom: 30px;
+    padding-bottom: 16px;
+  }
 
-  flex:1;
+  .logoSection {
+    flex-direction: column;
+    gap: 10px;
+  }
 
-  display:flex;
+  .logo {
+    width: 60px;
+    height: 60px;
+  }
 
-  justify-content:center;
+  .brand {
+    font-size: 1.2rem;
+  }
 
-  align-items:center;
-}
+  .subtitle {
+    font-size: 0.85rem;
+  }
 
-.headerCenter h2{
+  .youtubeLink {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
 
-  font-size:2rem;
+  .headerCenter h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
 
-  font-weight:700;
+  .headerRight {
+    gap: 12px;
+  }
 
-  color:white;
+  .profileImage {
+    width: 48px;
+    height: 48px;
+  }
 
-  letter-spacing:.5px;
+  .adminButton {
+    padding: 8px 16px;
+    font-size: .8rem;
+  }
+
+  .hamburgerButton {
+    width: 42px;
+    height: 42px;
+    font-size: 1.3rem;
+  }
+
+  .dropdownMenu {
+    width: 150px;
+    right: -30px;
+  }
+
+  .heroDescription {
+    margin-bottom: 30px;
+  }
+
+  .heroDescription p {
+    font-size: .95rem;
+    line-height: 1.7;
+  }
+
 }

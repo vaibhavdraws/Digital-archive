@@ -1,408 +1,343 @@
-/* =========================
-   SKETCHBOOK WRAPPER
-========================= */
+.sketchbookWrapper {
+  width: 100%;
+  min-height: 75vh;
 
-.sketchbookWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  width:100%;
+  gap: 40px;
 
-  min-height:75vh;
-
-  display:flex;
-
-  flex-direction:column;
-
-  align-items:center;
-
-  gap:40px;
-
-  position:relative;
+  position: relative;
 }
 
-/* =========================
-   BOOK
-========================= */
+.book {
+  width: 100%;
+  max-width: 1200px;
 
-.book{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 
-  width:100%;
-
-  max-width:1200px;
-
-  display:grid;
-
-  grid-template-columns:
-  repeat(2,1fr);
-
-  gap:20px;
-
-  padding:24px;
+  gap: 20px;
+  padding: 24px;
 
   background:
-  rgba(255,255,255,0.04);
+    rgba(255, 255, 255, 0.04);
 
   border:
-  1px solid rgba(255,255,255,0.08);
+    1px solid rgba(255, 255, 255, 0.08);
 
-  border-radius:24px;
+  border-radius: 24px;
 
-  backdrop-filter:blur(10px);
+  backdrop-filter: blur(10px);
 }
 
-/* =========================
-   PAGE
-========================= */
-
-.page{
-
+.page {
   background:
-  linear-gradient(
-    145deg,
-    #111111,
-    #1b1b1b
-  );
+    linear-gradient(145deg,
+      #111111,
+      #1b1b1b);
 
-  border-radius:20px;
+  border-radius: 20px;
 
-  overflow:hidden;
-
-  position:relative;
+  overflow: hidden;
 
   transition: .3s ease;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.page:hover {
+  transform: translateY(-6px);
+}
+
+.page img {
+  width: 100%;
+  height: 520px;
+
+  object-fit: cover;
+
+  display: block;
+
+  cursor: pointer;
+}
+
+.page h2 {
+  padding: 18px;
+
+  font-size: 1rem;
+  font-weight: 500;
+
+  color: white;
+}
+
+.deleteButton {
+  margin: 12px 18px 18px;
+
+  padding: 10px 18px;
+
+  border: none;
+
+  border-radius: 999px;
+
+  background: white;
+  color: black;
+
+  font-weight: 600;
+
+  cursor: pointer;
 }
 
 /* =========================
-   HOVER
+   NAVIGATION
 ========================= */
 
-.page:hover{
+.navButton {
+  position: absolute;
 
-  transform:
-  translateY(-6px);
+  width: 58px;
+  height: 58px;
 
-  filter:
-  brightness(1.04);
-}
+  border: none;
 
-/* =========================
-   IMAGE
-========================= */
-
-.page img{
-
-  width:100%;
-
-  height:520px;
-
-  object-fit:cover;
-
-  display:block;
-
-  cursor:pointer;
-}
-
-/* =========================
-   TITLE
-========================= */
-
-.page h2{
-
-  padding:18px;
-
-  font-size:1rem;
-
-  font-weight:500;
-
-  color:white;
-}
-
-/* =========================
-   DELETE BUTTON
-========================= */
-
-.deleteButton{
-
-  margin:12px 18px 18px;
-
-  padding:10px 18px;
-
-  border:none;
-
-  border-radius:999px;
-
-  background:#ffffff;
-
-  color:#000;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:.25s;
-}
-
-.deleteButton:hover{
-
-  transform:translateY(-2px);
-
-  opacity:.9;
-
-}
-
-/* =========================
-   NAVIGATION BUTTONS
-========================= */
-
-.navButton{
-
-  position:absolute;
-
-  width:58px;
-
-  height:58px;
-
-  border:none;
-
-  border-radius:50%;
+  border-radius: 50%;
 
   background:
-  rgba(255,255,255,0.08);
+    rgba(255, 255, 255, 0.08);
 
-  color:white;
+  color: white;
 
-  font-size:1.4rem;
+  font-size: 1.4rem;
 
-  cursor:pointer;
+  cursor: pointer;
 
-  z-index:20;
-
-  transition:0.3s ease;
+  z-index: 20;
 }
 
-.navButton:hover{
-
-  background:
-  rgba(255,255,255,0.18);
-
-  transform:scale(1.08);
+.left {
+  left: -10px;
 }
 
-.left{
-
-  left:-10px;
-}
-
-.right{
-
-  right:-10px;
+.right {
+  right: -10px;
 }
 
 /* =========================
    UPLOAD PANEL
 ========================= */
 
-.uploadPanel{
+.uploadPanel {
+  width: 100%;
+  max-width: 520px;
 
-  width:100%;
-
-  max-width:520px;
-
-  padding:30px;
+  padding: 30px;
 
   background:
-  rgba(255,255,255,0.04);
+    rgba(255, 255, 255, 0.04);
 
   border:
-  1px solid rgba(255,255,255,0.08);
+    1px solid rgba(255, 255, 255, 0.08);
 
-  border-radius:24px;
+  border-radius: 24px;
 
-  backdrop-filter:blur(10px);
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.uploadPanel h2{
-
-  text-align:center;
-
-  color:white;
+.uploadPanel h2 {
+  text-align: center;
+  color: white;
 }
 
-.uploadPanel input{
+.uploadPanel input {
+  padding: 14px;
 
-  padding:14px;
+  border: none;
 
-  border:none;
-
-  border-radius:14px;
+  border-radius: 14px;
 
   background:
-  rgba(255,255,255,0.08);
+    rgba(255, 255, 255, 0.08);
 
-  color:white;
+  color: white;
 }
 
-.uploadPanel input::placeholder{
+.uploadPanel button {
+  background: white;
+  color: black;
 
-  color:#9f9f9f;
+  border: none;
+
+  border-radius: 999px;
+
+  padding: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
 }
 
-.uploadPanel button{
+.filePreview {
+  padding: 14px;
 
-  background:white;
+  border-radius: 14px;
 
-  color:black;
+  background:
+    rgba(255, 255, 255, 0.05);
 
-  border:none;
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
 
-  border-radius:999px;
+  color: #bdbdbd;
 
-  padding:14px;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:0.25s ease;
+  text-align: center;
 }
 
-.uploadPanel button:hover{
+.uploadPreview {
+  width: 100%;
+  max-height: 300px;
 
-  transform:
-  translateY(-2px);
+  object-fit: contain;
+
+  border-radius: 14px;
 }
 
 /* =========================
    MODAL
 ========================= */
 
-.modalOverlay{
+.modalOverlay {
+  position: fixed;
 
-  position:fixed;
+  top: 0;
+  left: 0;
 
-  top:0;
-
-  left:0;
-
-  width:100%;
-
-  height:100vh;
+  width: 100%;
+  height: 100vh;
 
   background:
-  rgba(0,0,0,0.72);
+    rgba(0, 0, 0, 0.72);
 
-  backdrop-filter:
-  blur(12px);
+  backdrop-filter: blur(12px);
 
-  display:flex;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  justify-content:center;
-
-  align-items:center;
-
-  z-index:999;
+  z-index: 999;
 }
 
-.modalContent{
-
-  width:90%;
-
-  max-width:900px;
+.modalContent {
+  width: 90%;
+  max-width: 900px;
 
   background:
-  linear-gradient(
-    145deg,
-    #111111,
-    #1b1b1b
-  );
+    linear-gradient(145deg,
+      #111111,
+      #1b1b1b);
 
-  border-radius:24px;
+  border-radius: 24px;
 
-  overflow:hidden;
-
-  animation:
-  fadeModal 0.3s ease;
+  overflow: hidden;
 }
 
-.modalContent img{
+.modalContent img {
+  width: 100%;
 
-  width:100%;
+  max-height: 80vh;
 
-  max-height:80vh;
-
-  object-fit:contain;
-
-  display:block;
+  object-fit: contain;
 }
 
-.modalInfo{
-
-  padding:20px;
+.modalInfo {
+  padding: 20px;
 }
 
-.modalInfo h2{
-
-  margin-bottom:8px;
-
-  color:white;
+.modalOverlay {
+  animation: fadeIn .25s ease;
 }
 
-.modalInfo p{
+.modalContent {
+  animation: zoomIn .25s ease;
+}
 
-  color:#9f9f9f;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* =========================
-   MODAL ANIMATION
+   GALLERY
 ========================= */
 
-@keyframes fadeModal{
+.galleryGrid {
+  width: 100%;
+  max-width: 1400px;
 
-  from{
+  margin: auto;
 
-    opacity:0;
+  column-count: 3;
+  column-gap: 20px;
+}
 
-    transform:
-    scale(0.92);
-  }
+.galleryItem {
+  break-inside: avoid;
 
-  to{
+  margin-bottom: 20px;
 
-    opacity:1;
+  cursor: pointer;
 
-    transform:
-    scale(1);
-  }
+  border-radius: 18px;
 
+  overflow: hidden;
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  transition: .3s ease;
+}
+
+.galleryItem img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.galleryItem:hover {
+  transform: translateY(-6px) scale(1.01);
 }
 
 /* =========================
    TABLET
 ========================= */
 
-@media(max-width:900px){
+@media(max-width:900px) {
 
-  .book{
-
-    grid-template-columns:
-    1fr;
+  .galleryGrid {
+    column-count: 2;
   }
 
-  .page img{
-
-    height:420px;
-  }
-
-  .navButton{
-
-    width:52px;
-
-    height:52px;
+  .page img {
+    height: 380px;
   }
 }
 
@@ -410,48 +345,62 @@
    MOBILE
 ========================= */
 
-@media(max-width:600px){
+@media(max-width:600px) {
 
-  .page img{
+  .book {
+    grid-template-columns: repeat(2, 1fr);
 
-    height:300px;
+    gap: 12px;
+    padding: 14px;
   }
 
-  .navButton{
-
-    width:46px;
-
-    height:46px;
-
-    font-size:1.1rem;
+  .page img {
+    height: 220px;
   }
 
-  .book{
-
-    padding:16px;
-
-    gap:16px;
+  .page h2 {
+    font-size: .85rem;
+    padding: 12px;
   }
 
-  .uploadPanel{
-
-    padding:20px;
+  .galleryGrid {
+    column-count: 2;
+    column-gap: 12px;
   }
+
+  .navButton {
+    width: 42px;
+    height: 42px;
+
+    font-size: 1rem;
+  }
+
+  .uploadPanel {
+    padding: 20px;
+  }
+
 }
 
-.filePreview{
+.uploadActions {
+  display: flex;
+  gap: 12px;
+}
 
-  padding:14px;
+.uploadActions button {
+  flex: 1;
+}
 
-  border-radius:14px;
-
+.changeButton {
   background:
-  rgba(255,255,255,0.05);
+    rgba(255, 255, 255, 0.08) !important;
+
+  color: white !important;
 
   border:
-  1px solid rgba(255,255,255,0.08);
+    1px solid rgba(255, 255, 255, 0.1) !important;
+}
 
-  color:#bdbdbd;
-
-  text-align:center;
+.viewTransition{
+  animation:
+  slideUpFade .7s ease;
 }

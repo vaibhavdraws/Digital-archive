@@ -21,3 +21,6 @@ Thumbs.db
 
 # misc
 .idea/
+
+# Uploaded artwork
+server/uploads/

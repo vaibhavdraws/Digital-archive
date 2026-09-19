@@ -6,92 +6,71 @@ export default function UploadPanel({
 
 }) {
 
-  const [title, setTitle]
-    = useState("")
-
-  const [image, setImage]
-    = useState(null)
-
-  const [loading, setLoading]
-    = useState(false)
+const [title, setTitle] = useState("")
+const [image, setImage] = useState(null)
+const [preview, setPreview] = useState(null)
+const [loading, setLoading] = useState(false)
 
   const fileInputRef =
     useRef(null)
 
-  /* =========================
-     IMAGE SELECT
-  ========================= */
-
   const handleImage = (e) => {
 
-    setImage(
+    const file =
       e.target.files[0]
+
+    if (!file) return
+
+    setImage(file)
+
+    setPreview(
+      URL.createObjectURL(file)
     )
 
   }
 
-  /* =========================
-     UPLOAD
-  ========================= */
-
   const handleUpload = async () => {
 
-    if (!title || !image) {
-
-      alert(
-        "Add title and image"
-      )
-
+    if (!image) {
+      fileInputRef.current.click()
       return
+    }
 
+    if (!title) {
+      alert("Add title first")
+      return
     }
 
     try {
 
       setLoading(true)
 
-      const formData =
-        new FormData()
+      const formData = new FormData()
 
-      formData.append(
-        "title",
-        title
+      formData.append("title", title)
+      formData.append("image", image)
+
+      const response = await fetch(
+        "http://localhost:5000/upload",
+        {
+          method: "POST",
+          body: formData
+        }
       )
-
-      formData.append(
-        "image",
-        image
-      )
-
-      const response =
-        await fetch(
-
-          "http://localhost:5000/upload",
-
-          {
-
-            method: "POST",
-
-            body: formData
-
-          }
-
-        )
 
       if (!response.ok) {
-
-        throw new Error(
-          "Upload failed"
-        )
-
+        throw new Error("Upload failed")
       }
 
-      alert(
-        "Artwork uploaded"
-      )
+      alert("Artwork uploaded")
 
       setTitle("")
       setImage(null)
+      setPreview(null)
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
 
       refreshArtworks()
 
@@ -99,9 +78,7 @@ export default function UploadPanel({
 
       console.log(error)
 
-      alert(
-        "Upload failed"
-      )
+      alert("Upload failed")
 
     } finally {
 
@@ -110,10 +87,6 @@ export default function UploadPanel({
     }
 
   }
-
-  /* =========================
-     PANEL
-  ========================= */
 
   return (
 
@@ -137,10 +110,22 @@ export default function UploadPanel({
         type="file"
         accept="image/*"
         onChange={handleImage}
-        style={{
-          display: "none"
-        }}
+        hidden
       />
+
+      {
+
+        preview && (
+
+          <img
+            src={preview}
+            alt="preview"
+            className="uploadPreview"
+          />
+
+        )
+
+      }
 
       <div className="filePreview">
 
@@ -154,38 +139,47 @@ export default function UploadPanel({
 
       </div>
 
-      <button
+      {
 
-        onClick={() => {
+        !image ? (
 
-          if (!image) {
+          <button
+            onClick={() =>
+              fileInputRef.current.click()
+            }
+          >
+            Choose Artwork
+          </button>
 
-            fileInputRef.current.click()
+        ) : (
 
-            return
+          <div className="uploadActions">
 
-          }
+            <button
+              onClick={handleUpload}
+              disabled={loading}
+            >
+              {
+                loading
+                  ? "Uploading..."
+                  : "Upload Artwork"
+              }
+            </button>
 
-          handleUpload()
+            <button
+              className="changeButton"
+              onClick={() =>
+                fileInputRef.current.click()
+              }
+            >
+              Change Artwork
+            </button>
 
-        }}
+          </div>
 
-        disabled={loading}
+        )
 
-      >
-
-        {
-          loading
-            ? "Uploading..."
-
-            : image
-
-              ? "Upload Artwork"
-
-              : "Choose Artwork"
-        }
-
-      </button>
+      }
 
     </div>
 
