@@ -25,7 +25,7 @@ app.use(express.json())
   console.log("Password check:", result)
 })() */
 
-app.post("/admin-login", async (req, res) => {
+app.post("https://captain-lawc-api.onrender.com/admin-login", async (req, res) => {
 
   const { password } = req.body
 
@@ -304,7 +304,7 @@ app.use(
    ADMIN LOGIN
 ========================= */
 
-app.post("/admin-login", (req, res) => {
+app.post("https://captain-lawc-api.onrender.com/admin-login", (req, res) => {
 
   const { password } = req.body
 
