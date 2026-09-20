@@ -51,7 +51,7 @@ const [loading, setLoading] = useState(false)
       formData.append("image", image)
 
       const response = await fetch(
-        "http://localhost:5000/upload",
+        "https://captain-lawc-api.onrender.com/upload",
         {
           method: "POST",
           body: formData
