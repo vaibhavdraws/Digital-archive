@@ -12,6 +12,8 @@ export default function App() {
   const [isAdmin, setIsAdmin] =
     useState(false)
 
+  const [adminToken, setAdminToken] = useState(null)
+
   const [viewMode, setViewMode] =
     useState("sketchbook")
 
@@ -50,12 +52,12 @@ export default function App() {
 
     <div className="app">
 
-      <Header
-        isAdmin={isAdmin}
-        setIsAdmin={setIsAdmin}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-      />
+     <Header
+  isAdmin={isAdmin}
+  setIsAdmin={setIsAdmin}
+  setAdminToken={setAdminToken}
+  setViewMode={setViewMode}
+/>
 
       <section className="heroDescription">
 
@@ -73,11 +75,12 @@ export default function App() {
           viewMode === "sketchbook"
 
             ? (
-              <Sketchbook
-                isAdmin={isAdmin}
-                artworks={artworks}
-                refreshArtworks={fetchArtworks}
-              />
+             <Sketchbook
+  isAdmin={isAdmin}
+  adminToken={adminToken}
+  artworks={artworks}
+  refreshArtworks={fetchArtworks}
+/>
             )
 
             : (

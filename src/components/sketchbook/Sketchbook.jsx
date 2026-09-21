@@ -6,11 +6,10 @@ import ArtworkModal from "../modal/ArtworkModal"
 import UploadPanel from "../upload/UploadPanel"
 
 export default function Sketchbook({
-
   isAdmin,
+  adminToken,
   artworks,
   refreshArtworks
-
 }) {
 
   const [page, setPage]
@@ -48,35 +47,31 @@ export default function Sketchbook({
 
   }
 
-  const deleteArtwork = async (
-    artwork
-  ) => {
+const deleteArtwork = async (
+  artwork
+) => {
 
-    const filename =
-      artwork.image.split("/").pop()
+  const filename =
+    artwork.image.split("/").pop()
 
-    await fetch(
+  await fetch(
+    "https://captain-lawc-api.onrender.com/artworks",
+    {
+      method: "DELETE",
 
-      "https://captain-lawc-api.onrender.com/artworks",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${adminToken}`
+      },
 
-      {
-        method: "DELETE",
+      body: JSON.stringify({
+        filename
+      })
+    }
+  )
 
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body: JSON.stringify({
-          filename
-        })
-      }
-
-    )
-
-    refreshArtworks()
-
-  }
+  refreshArtworks()
+}
 
   return (
 
@@ -112,17 +107,13 @@ export default function Sketchbook({
         }
       />
 
-      {
-
-        isAdmin && (
-
-          <UploadPanel
-            refreshArtworks={refreshArtworks}
-          />
-
-        )
-
-      }
+     {
+     isAdmin && (
+  <UploadPanel
+    refreshArtworks={refreshArtworks}
+    adminToken={adminToken}
+  />
+)}
 
     </section>
 

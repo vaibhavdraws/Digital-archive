@@ -1,150 +1,172 @@
 const express = require("express")
 const cors = require("cors")
 const multer = require("multer")
-const path = require("path")
 const fs = require("fs")
+const path = require("path")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-require("dotenv").config()
+const { createClient } = require("@supabase/supabase-js")
 
-const artworksFile =
-  path.join(__dirname, "artworks.json")
+require("dotenv").config()
 
 const app = express()
 
 app.use(cors())
-
 app.use(express.json())
 
-/*;(async () => {
-  const result = await bcrypt.compare(
-    "gillu123",
-    process.env.ADMIN_PASSWORD_HASH
-  )
+/* =========================
+   SUPABASE
+========================= */
 
-  console.log("Password check:", result)
-})() */
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
-app.post("https://captain-lawc-api.onrender.com/admin-login", async (req, res) => {
+const BUCKET = "artworks"
+
+/* =========================
+   ADMIN AUTHENTICATION
+========================= */
+
+function authenticateAdmin(req, res, next) {
+
+  const authHeader = req.headers.authorization
+
+  const token =
+    authHeader &&
+    authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null
+
+  if (!token) {
+    return res.status(401).json({
+      error: "Unauthorized"
+    })
+  }
+
+  try {
+
+    const decoded =
+      jwt.verify(
+        token,
+        process.env.JWT_SECRET
+      )
+
+    if (!decoded.admin) {
+      return res.status(403).json({
+        error: "Forbidden"
+      })
+    }
+
+    req.admin = decoded
+
+    next()
+
+  } catch (error) {
+
+    return res.status(401).json({
+      error: "Invalid or expired token"
+    })
+
+  }
+
+}
+
+/* =========================
+   MULTER
+========================= */
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  }
+})
+
+/* =========================
+   ADMIN LOGIN
+========================= */
+
+app.post("/admin-login", async (req, res) => {
 
   const { password } = req.body
 
-  const isMatch =
-    await bcrypt.compare(
+  try {
+
+    const isMatch = await bcrypt.compare(
       password,
       process.env.ADMIN_PASSWORD_HASH
     )
 
-  if (isMatch) {
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false
+      })
+    }
+
     const token = jwt.sign(
       { admin: true },
       process.env.JWT_SECRET,
       { expiresIn: "2h" }
     )
 
-    return res.json({
+    res.json({
       success: true,
       token
     })
+
+  } catch (error) {
+
+    console.error("Login error:", error)
+
+    res.status(500).json({
+      success: false,
+      error: "Server error"
+    })
+
   }
 
-  res.status(401).json({
-    success: false
-  })
-
 })
-/* =========================
-   CREATE UPLOAD FOLDER
-========================= */
-
-const uploadPath =
-  path.join(__dirname, "uploads")
-
-if (!fs.existsSync(uploadPath)) {
-
-  fs.mkdirSync(uploadPath)
-
-}
-
-/* =========================
-   STORAGE CONFIG
-========================= */
-
-const storage =
-  multer.diskStorage({
-
-    destination: (req, file, cb) => {
-
-      cb(null, uploadPath)
-
-    },
-
-    filename: (req, file, cb) => {
-
-      cb(
-
-        null,
-
-        Date.now() +
-        path.extname(
-          file.originalname
-        )
-
-      )
-
-    }
-
-  })
-
-const upload =
-  multer({
-
-    storage,
-
-    limits: {
-
-      fileSize:
-        10 * 1024 * 1024
-
-    }
-
-  })
 
 /* =========================
    GET ARTWORKS
 ========================= */
 
-app.get("/artworks", (req, res) => {
+app.get("/artworks", async (req, res) => {
 
-  const artworks =
+  try {
 
-    JSON.parse(
-
-      fs.readFileSync(
-        artworksFile,
-        "utf8"
-      )
-
-    )
-
-  const formatted =
-
-    artworks.map(
-
-      artwork => ({
-
-        id: artwork.id,
-
-        title: artwork.title,
-
-        image:
-    `https://captain-lawc-api.onrender.com/uploads/${artwork.filename}`
-
+    const { data, error } = await supabase
+      .from("artworks")
+      .select("id, title, filename, image_url")
+      .order("created_at", {
+        ascending: true
       })
 
-    )
+    if (error) {
+      throw error
+    }
 
-  res.json(formatted)
+    res.json(
+  data.map(artwork => ({
+    id: artwork.id,
+    title: artwork.title,
+    filename: artwork.filename,
+    image: artwork.image_url
+  }))
+)
+
+  } catch (error) {
+
+    console.error("Get artworks error:", error)
+
+    res.status(500).json({
+      error: "Failed to load artworks"
+    })
+
+  }
 
 })
 
@@ -153,62 +175,88 @@ app.get("/artworks", (req, res) => {
 ========================= */
 
 app.post(
-
   "/upload",
-
+  authenticateAdmin,
   upload.single("image"),
+  async (req, res) => {
 
-  (req, res) => {
+    try {
 
-    if (!req.file) {
+      if (!req.file) {
+        return res.status(400).json({
+          error: "No image uploaded"
+        })
+      }
 
-      return res.status(400).json({
+      const filename =
+        Date.now() +
+        path.extname(req.file.originalname)
 
-        error: "No image uploaded"
+      /* Upload image to Supabase Storage */
 
+      const { error: uploadError } =
+        await supabase.storage
+          .from(BUCKET)
+          .upload(
+            filename,
+            req.file.buffer,
+            {
+              contentType: req.file.mimetype,
+              upsert: false
+            }
+          )
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      /* Get public image URL */
+
+      const { data: publicData } =
+        supabase.storage
+          .from(BUCKET)
+          .getPublicUrl(filename)
+
+      const imageUrl =
+        publicData.publicUrl
+
+      /* Save artwork information */
+
+      const { data, error } =
+        await supabase
+          .from("artworks")
+          .insert({
+            title: req.body.title,
+            filename: filename,
+            image_url: imageUrl
+          })
+          .select()
+          .single()
+
+      if (error) {
+
+        /* Remove uploaded image if database insert fails */
+
+        await supabase.storage
+          .from(BUCKET)
+          .remove([filename])
+
+        throw error
+      }
+
+      res.json(data)
+
+    } catch (error) {
+
+      console.error("Upload error:", error)
+
+      res.status(500).json({
+        error: "Failed to upload artwork"
       })
 
     }
 
-    const artworks =
-
-      JSON.parse(
-
-        fs.readFileSync(
-          artworksFile,
-          "utf8"
-        )
-
-      )
-
-    const newArtwork = {
-
-      id: Date.now(),
-
-      title: req.body.title,
-
-      filename: req.file.filename
-
-    }
-
-    artworks.push(newArtwork)
-
-    fs.writeFileSync(
-
-      artworksFile,
-
-      JSON.stringify(
-        artworks,
-        null,
-        2
-      )
-
-    )
-
-    res.json(newArtwork)
-
   }
-
 )
 
 /* =========================
@@ -216,119 +264,78 @@ app.post(
 ========================= */
 
 app.delete(
-
   "/artworks",
+  authenticateAdmin,
+  async (req, res) => {
 
-  (req, res) => {
+    try {
 
-    const { filename } =
-      req.body
+      const { filename } = req.body
 
-    if (!filename) {
+      if (!filename) {
+        return res.status(400).json({
+          error: "Filename required"
+        })
+      }
 
-      return res.status(400).json({
+      /* Delete image from Storage */
 
-        error: "Filename required"
+      const { error: storageError } =
+        await supabase.storage
+          .from(BUCKET)
+          .remove([filename])
 
+      if (storageError) {
+        console.error(
+          "Storage delete error:",
+          storageError
+        )
+      }
+
+      /* Delete database record */
+
+      const { error: databaseError } =
+        await supabase
+          .from("artworks")
+          .delete()
+          .eq("filename", filename)
+
+      if (databaseError) {
+        throw databaseError
+      }
+
+      res.json({
+        success: true
+      })
+
+    } catch (error) {
+
+      console.error("Delete error:", error)
+
+      res.status(500).json({
+        error: "Failed to delete artwork"
       })
 
     }
 
-    const filePath =
-      path.join(
-        uploadPath,
-        filename
-      )
-
-    if (fs.existsSync(filePath)) {
-
-      fs.unlinkSync(filePath)
-
-    }
-
-    let artworks =
-
-      JSON.parse(
-
-        fs.readFileSync(
-          artworksFile,
-          "utf8"
-        )
-
-      )
-
-    artworks = artworks.filter(
-
-      artwork =>
-
-        artwork.filename !==
-        filename
-
-    )
-
-    fs.writeFileSync(
-
-      artworksFile,
-
-      JSON.stringify(
-        artworks,
-        null,
-        2
-      )
-
-    )
-
-    res.json({
-
-      success: true
-
-    })
-
   }
-
 )
 
-/* =========================
-   STATIC FILES
-========================= */
-
-app.use(
-
-  "/uploads",
-
-  express.static(uploadPath)
-
-)
-
-/* =========================
-   ADMIN LOGIN
-========================= */
-
-app.post("https://captain-lawc-api.onrender.com/admin-login", (req, res) => {
-
-  const { password } = req.body
-
-  if (
-    password === process.env.ADMIN_PASSWORD
-  ) {
-    return res.json({
-      success: true
-    })
-  }
-
-  res.status(401).json({
-    success: false
-  })
-
-})
 /* =========================
    START SERVER
 ========================= */
 
-app.listen(process.env.PORT || 5000, '0.0.0.0', () => {
+const PORT =
+  process.env.PORT || 5000
+
+app.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
 
     console.log(
-        `Server running on port ${process.env.PORT || 5000}`
+      `Server running on port ${PORT}`
     )
 
-})
+  }
+)

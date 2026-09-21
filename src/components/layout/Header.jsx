@@ -4,12 +4,13 @@ export default function Header({
 
   isAdmin,
   setIsAdmin,
+  setAdminToken,
   setViewMode
 
 }) {
 
-  const [menuOpen, setMenuOpen]
-    = useState(false)
+  const [menuOpen, setMenuOpen] =
+    useState(false)
 
   const handleAdminLogin = async () => {
 
@@ -25,10 +26,12 @@ export default function Header({
           "https://captain-lawc-api.onrender.com/admin-login",
           {
             method: "POST",
+
             headers: {
               "Content-Type":
                 "application/json"
             },
+
             body: JSON.stringify({
               password
             })
@@ -40,7 +43,7 @@ export default function Header({
 
       if (data.success) {
 
-
+        setAdminToken(data.token)
         setIsAdmin(true)
 
       } else {
@@ -58,6 +61,7 @@ export default function Header({
     }
 
   }
+
   return (
 
     <header className="header">

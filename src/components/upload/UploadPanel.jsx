@@ -1,9 +1,8 @@
 import { useState, useRef } from "react"
 
 export default function UploadPanel({
-
-  refreshArtworks
-
+  refreshArtworks,
+  adminToken
 }) {
 
 const [title, setTitle] = useState("")
@@ -50,13 +49,16 @@ const [loading, setLoading] = useState(false)
       formData.append("title", title)
       formData.append("image", image)
 
-      const response = await fetch(
-        "https://captain-lawc-api.onrender.com/upload",
-        {
-          method: "POST",
-          body: formData
-        }
-      )
+     const response = await fetch(
+  "https://captain-lawc-api.onrender.com/upload",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${adminToken}`
+    },
+    body: formData
+  }
+)
 
       if (!response.ok) {
         throw new Error("Upload failed")
