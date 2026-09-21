@@ -40,10 +40,6 @@ export default function Header({
 
       if (data.success) {
 
-        localStorage.setItem(
-          "adminToken",
-          data.token
-        )
 
         setIsAdmin(true)
 

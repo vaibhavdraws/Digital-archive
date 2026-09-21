@@ -42,13 +42,6 @@ export default function App() {
 
   useEffect(() => {
 
-    const token =
-      localStorage.getItem("adminToken")
-
-    if (token) {
-      setIsAdmin(true)
-    }
-
     fetchArtworks()
 
   }, [])
